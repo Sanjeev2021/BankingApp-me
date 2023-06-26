@@ -8,6 +8,7 @@ import (
 
 	"bankingapp/Account"
 	bank "bankingapp/Bank"
+
 )
 
 type User struct {
@@ -18,15 +19,17 @@ type User struct {
 	IsAdmin          bool
 	UsersCreatedByMe []*User
 	Usersname        string
+	Account          *Account.Account
 }
 
-func NewUser(firstname, lastname string) *User {
+func NewUser(firstname, lastname string, initialBalance float64) *User {
 	return &User{
 		ID:             uuid.NewV4(),
 		FirstName:      firstname,
 		LastName:       lastname,
-		AccountBalance: &Account.Account{},
+		AccountBalance: &Account.Account{AccountBalance: initialBalance},
 		IsAdmin:        true,
+		Account:        &Account.Account{},
 	}
 }
 
@@ -59,10 +62,10 @@ func (u *User) CreateNewAccount(bankname string, accountbalance float64, passboo
 	return createAccount, nil
 }
 
-func (u *User) FindAccount(firstName string) (*User, bool) {
+func (u *User) FindAccount(bankname string) (*Account.Account, bool) {
 	for i := 0; i < len(u.UsersCreatedByMe); i++ {
-		if u.UsersCreatedByMe[i].FirstName == firstName {
-			return u.UsersCreatedByMe[i], true
+		if u.UsersCreatedByMe[i].Account.BankName == bankname {
+			return u.UsersCreatedByMe[i].Account, true
 		}
 	}
 	return nil, false
@@ -129,7 +132,7 @@ func (u *User) TransferMoney(bankname string, amount float64) error {
 	if !u.IsAdmin {
 		return errors.New("YOU ARE NOT AN ADMIN YOU CANT TRANSFER MONEY")
 	}
-	transfer := u.AccountBalance.TransferMoney(amount, u.AccountBalance)
+	transfer := u.Account.TransferMoney(amount, u.Account)
 	if transfer != nil {
 		return transfer
 	}
@@ -140,5 +143,10 @@ func (u *User) GetAccountBalance(bankname string) (float64, error) {
 	if !u.IsAdmin {
 		return 0, errors.New("YOU ARE NOT AN ADMIN YOU CANT GET ACCOUNT BALANCE")
 	}
-	return u.AccountBalance.GetBalance(), nil
+
+	account, found := u.FindAccount(bankname)
+	if !found {
+		return 0, errors.New("account not found")
+	}
+	return account.GetBalance(), nil
 }

@@ -33,7 +33,7 @@ func (ad *Admin) CreateUser(firstname, lastname string) (*user.User, error) {
 		return nil, errors.New("Not admin")
 	}
 
-	UserCreated := user.NewUser(firstname, lastname)
+	UserCreated := user.NewUser(firstname, lastname, 1000)
 
 	ad.UsersCreatedByMe = append(ad.UsersCreatedByMe, UserCreated)
 	return UserCreated, nil

@@ -10,9 +10,9 @@ import (
 )
 
 type Bank struct {
-	ID       uuid.UUID
-	BankName string
-	//Account          *Account.Account
+	ID               uuid.UUID
+	BankName         string
+	Account          *Account.Account
 	IsAdmin          bool
 	BanksCreatedByMe []Bank
 	Bankname         string
@@ -23,6 +23,7 @@ func NewBank(bankname string) *Bank {
 		ID:       uuid.NewV4(),
 		BankName: bankname,
 		IsAdmin:  true,
+		Account:  &Account.Account{},
 	}
 }
 

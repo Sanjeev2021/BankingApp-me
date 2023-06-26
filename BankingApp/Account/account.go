@@ -14,7 +14,7 @@ type Account struct {
 	AccountCratedByMe []Account
 	AccountBalance    float64
 	IsUser            bool
-	Transfer          float64
+	// Transfer          float64
 }
 
 func NewAccount(bankname string, accountbalance float64, passbook string) (*Account, error) {
@@ -71,8 +71,8 @@ func (a *Account) TransferMoney(amount float64, account *Account) error {
 	if a.AccountBalance < amount {
 		return errors.New("Insufficient balance")
 	}
-	a.Withdraw(amount)
-	account.Deposit(amount)
+	a.AccountBalance -= amount
+	account.AccountBalance += amount
 	return nil
 }
 
